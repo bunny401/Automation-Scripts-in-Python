@@ -5,6 +5,7 @@ from lib2to3.pgen2 import token
 import os
 from re import L
 from tokenize import Token
+import urllib 
 import requests
 import logging
 import sys
@@ -15,6 +16,9 @@ from datetime import datetime
 import http.client as http_client
 from dotenv import load_dotenv
 load_dotenv()
+import csv
+from requests.api import head
+
 
 URL = "https://cloud.appscan.com/api/V2/"
 ASOC_KEY_ID = os.getenv("ASOC_KEY_ID")
@@ -53,12 +57,25 @@ def specific_scan_details(headers, SCAN_ID):
 def specific_scans_issues(headers, SCAN_ID, FIX_GROUP_ID):
     print("[+] Getting Details of the issue of the provided Fix Group ID")
     r=requests.get(URL+"FixGroups/Scan/"+SCAN_ID+"/"+FIX_GROUP_ID+"/Issues", headers=headers )
-    pretty_json = json.loads(r.text)  
-    print (json.dumps(pretty_json, indent=2)) 
+    # pretty_json = json.loads(r.text)  
+    # print(r.text)
     
+    myjson=r.json()
+    ourdata=[]
     
-    
-
+    csvheader = ['ID','Language','Severity','Status','Issue Type','Location']
+    for x in myjson ['Items']:
+        listing=[x['Id'],x['Language'],x['Severity'],x['Status'],x['IssueType'],x['Location']]
+        ourdata.append(listing)
+        
+        
+    with open('Scans.csv','a',encoding='UTF8', newline='')as f:
+        writer=csv.writer(f)
+        writer.writerow(csvheader)
+        writer.writerows(ourdata)
+        
+    print('done')
+    # print (json.dumps(pretty_json, indent=2)) 
 
 if __name__ == "__main__":
    headers= asoc_auth()
@@ -68,6 +85,7 @@ if __name__ == "__main__":
    
    FIX_GROUP_ID=input("Please provide the Fix Group ID: ")
    specific_scans_issues(headers, SCAN_ID, FIX_GROUP_ID)
+   
    
    
    
