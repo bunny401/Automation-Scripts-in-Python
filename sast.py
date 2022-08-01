@@ -46,17 +46,17 @@ def asoc_auth():
 
         
 #To get the details of a specific scan
-def specific_scan_details(headers, SCAN_ID):
-    print("[+] Getting the details of the scan ")
-    r=requests.get(URL+"Scans/StaticAnalyzer/"+ SCAN_ID, headers=headers)
-    pretty_json = json.loads(r.text)  
-    print (json.dumps(pretty_json, indent=2))  
+# def specific_scan_details(headers, SCAN_ID):
+#     print("[+] Getting the details of the scan ")
+#     r=requests.get(URL+"Scans/StaticAnalyzer/"+ SCAN_ID, headers=headers)
+#     pretty_json = json.loads(r.text)  
+#     print (json.dumps(pretty_json, indent=2))  
     
     
 # to get all the issues beloging to the provded Fix Group ID
 def specific_scans_issues(headers, SCAN_ID, FIX_GROUP_ID):
     print("[+] Getting Details of the issue of the provided Fix Group ID")
-    r=requests.get(URL+"FixGroups/Scan/"+SCAN_ID+"/"+FIX_GROUP_ID+"/Issues", headers=headers )
+    r=requests.get(URL+"FixGroups/Scan/"+SCAN_ID+"/"+FIX_GROUP_ID+"/Issues?$filter=Status ne 'Noise'", headers=headers )
     # pretty_json = json.loads(r.text)  
     # print(r.text)
     
@@ -68,7 +68,7 @@ def specific_scans_issues(headers, SCAN_ID, FIX_GROUP_ID):
         listing=[x['Id'],x['Language'],x['Severity'],x['Status'],x['IssueType'],x['Location']]
         ourdata.append(listing)
         
-        
+        # chane 'a' to 'w' when first time creating the file
     with open('Scans.csv','a',encoding='UTF8', newline='')as f:
         writer=csv.writer(f)
         writer.writerow(csvheader)
@@ -77,47 +77,18 @@ def specific_scans_issues(headers, SCAN_ID, FIX_GROUP_ID):
     print('done')
     # print (json.dumps(pretty_json, indent=2)) 
 
+
+
+
+
+
 if __name__ == "__main__":
    headers= asoc_auth()
    
    SCAN_ID=input("Please Provide the Scan ID:")
-   specific_scan_details(headers, SCAN_ID)
+#    specific_scan_details(headers, SCAN_ID)
    
    FIX_GROUP_ID=input("Please provide the Fix Group ID: ")
    specific_scans_issues(headers, SCAN_ID, FIX_GROUP_ID)
    
    
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-
-
-
-
-    
-
-
-
-
-
-
-    
-
-
-
-
-
-
-    
-    
-    
-      
